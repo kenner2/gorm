@@ -108,7 +108,7 @@ func (m Migrator) FullDataTypeOf(field *schema.Field) (expr clause.Expr) {
 }
 
 func (m Migrator) GetQueryAndExecTx() (queryTx, execTx *gorm.DB) {
-	queryTx = m.DB.Session(&gorm.Session{})
+	queryTx = m.DB.Session(&gorm.Session{Logger: m.DB.Logger})
 	execTx = queryTx
 	if m.DB.DryRun {
 		queryTx.DryRun = false
@@ -214,7 +214,7 @@ func (m Migrator) GetTables() (tableList []string, err error) {
 // CreateTable create table in database for values
 func (m Migrator) CreateTable(values ...interface{}) error {
 	for _, value := range m.ReorderModels(values, false) {
-		tx := m.DB.Session(&gorm.Session{})
+		tx := m.DB.Session(&gorm.Session{Logger: m.DB.Logger})
 		if err := m.RunWithValue(value, func(stmt *gorm.Statement) (err error) {
 
 			if stmt.Schema == nil {
@@ -319,7 +319,7 @@ func (m Migrator) CreateTable(values ...interface{}) error {
 func (m Migrator) DropTable(values ...interface{}) error {
 	values = m.ReorderModels(values, false)
 	for i := len(values) - 1; i >= 0; i-- {
-		tx := m.DB.Session(&gorm.Session{})
+		tx := m.DB.Session(&gorm.Session{Logger: m.DB.Logger})
 		if err := m.RunWithValue(values[i], func(stmt *gorm.Statement) error {
 			return tx.Exec("DROP TABLE IF EXISTS ?", m.CurrentTable(stmt)).Error
 		}); err != nil {
@@ -611,7 +611,7 @@ func (m Migrator) MigrateColumnUnique(value interface{}, field *schema.Field, co
 func (m Migrator) ColumnTypes(value interface{}) ([]gorm.ColumnType, error) {
 	columnTypes := make([]gorm.ColumnType, 0)
 	execErr := m.RunWithValue(value, func(stmt *gorm.Statement) (err error) {
-		rows, err := m.DB.Session(&gorm.Session{}).Table(stmt.Table).Limit(1).Rows()
+		rows, err := m.DB.Session(&gorm.Session{Logger: m.DB.Logger}).Table(stmt.Table).Limit(1).Rows()
 		if err != nil {
 			return err
 		}
