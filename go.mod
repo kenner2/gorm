@@ -7,3 +7,5 @@ require (
 	github.com/jinzhu/now v1.1.5
 	golang.org/x/text v0.20.0
 )
+
+replace gorm.io/gorm => github.com/kenner2/gorm v0.0.0-20250620010921-f36e1115897f
