@@ -16,7 +16,7 @@ func (db *DB) Migrator() Migrator {
 		tx = tx.executeScopes()
 	}
 
-	return tx.Dialector.Migrator(tx.Session(&Session{}))
+	return tx.Dialector.Migrator(tx.Session(&Session{Logger: db.Logger}))
 }
 
 // AutoMigrate run auto migration for given models
